@@ -1,4 +1,4 @@
-# Metal_Detector_1
+# Metal_Detector_4
 test arduino-connected metal detector circuits
 
  this based on Techkiwigadget's work; https://www.instructables.com/id/Arduino-Metal-Detector/
