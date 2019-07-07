@@ -1,9 +1,9 @@
 // Arduino Single Coil Metal Detector 
 
 /* V2 - Production Version with dynamic thresholds and auto calibrate, Adjusted LED Brightness to maximum
-   V3 – increased delay 5000us to 20000us to compensate for single coil, increased dly1= 600 tested on single ok 12/03/2016
+   V3 - increased delay 5000us to 20000us to compensate for single coil, increased dly1= 600 tested on single ok 12/03/2016
 */
-
+bool Debug=false;
 int ledthreshold1 = 40;
 
 int threshdiff = 15; // Add to average to become specific threshold where LED will light (Changed V21 from 25 to 20)
@@ -64,21 +64,22 @@ digitalWrite(3,LOW); // Set low on output pin
 delayMicroseconds(dly1); // Wait before reading pulses
 
 pcounterA = pcounterA + pulseIn(4,HIGH,20)+ pulseIn(4,HIGH,20) + pulseIn(4,HIGH,20)+ pulseIn(4,HIGH,20) + pulseIn(4,HIGH,20)+ pulseIn(4,HIGH,20) + pulseIn(4,HIGH,20);
-
-Serial.print(pcounterA);
-Serial.print(" ");
-// Show delay variables
-Serial.print("      ");
-Serial.print(dly1);
-Serial.print("      ");
-Serial.print(pulse1);
-Serial.print(" ");
-Serial.print(pulse2);
-Serial.print(" ");
-Serial.print(pulse3);
-Serial.print(" ");
-Serial.println(pulseav);
-
+if(Debug)
+   {
+  Serial.print(pcounterA);
+  Serial.print(" ");
+  // Show delay variables
+  Serial.print("      ");
+  Serial.print(dly1);
+  Serial.print("      ");
+  Serial.print(pulse1);
+  Serial.print(" ");
+  Serial.print(pulse2);
+  Serial.print(" ");
+  Serial.print(pulse3);
+  Serial.print(" ");
+  Serial.println(pulseav);
+   }
 // Display results
 digitalWrite(14,LOW); // Set the output pin to Low to deactivate the LED
 
@@ -87,16 +88,12 @@ if(pcounterA < ledthreshold1)
 digitalWrite(14,HIGH); // Set the output pin to high to activate the LED
 }
 
-/* delay(10);  // Sets up LED brightness
-// Turn off all LEDs
-digitalWrite(14,LOW); // Set the output pin to Low to deactivate the LED
-*/
 }
-
 
 // Subroutines
 
 void calibrate()      {
+Serial.println("Calibration started");
 // Turn off all LEDs
 digitalWrite(14,LOW); // Set the output pin to Low to deactivate the LED
 // Calibrate Coil D delay threshold  ------------------------------------------------------------
@@ -126,17 +123,22 @@ while (pulseav <= minthresh ){
   pulse3 = pulseIn(4,HIGH,20)+ pulseIn(4,HIGH,20) + pulseIn(4,HIGH,20)+ pulseIn(4,HIGH,20) + pulseIn(4,HIGH,20)+ pulseIn(4,HIGH,20) + pulseIn(4,HIGH,20);
   
   pulseav = (pulse1 + pulse2 + pulse3)/3;
+
+  Serial.print("Calibration running: Pulseav=");
+  Serial.println(pulseav);
   
   // Decrement threshold if output too low
   if(pulseav < minthresh) {
     dly1 = dly1 - 10;
     }
-} 
-
+}
+ 
+Serial.print("Calibration complete: Pulseav=");
+Serial.println(pulseav);
 // Flash LED to prove something done
 digitalWrite(14,HIGH); // Set the output pin to high to activate the LED
 delay(5);
 digitalWrite(14,LOW); // Set the output pin to high to activate the LED
   
 ledthreshold1 = pulseav + threshdiff; 
-}
+}                     // end calibrate
